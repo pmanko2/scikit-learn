@@ -863,7 +863,7 @@ def _incremental_fit_estimator(estimator, X, y, classes, train, test,
 
 
 def validation_curve(estimator, X, y, param_name, param_range, labels=None,
-                     cv=None, scoring=None, n_jobs=1, pre_dispatch="all",
+                     cv=None, scoring=None, fit_params=None, n_jobs=1, pre_dispatch="all",
                      verbose=0):
     """Validation curve.
 
@@ -919,6 +919,9 @@ def validation_curve(estimator, X, y, param_name, param_range, labels=None,
         a scorer callable object / function with signature
         ``scorer(estimator, X, y)``.
 
+    fit_params : dict, optional, default: None
+        Parameters that will be passed to ``estimator.fit``.
+
     n_jobs : integer, optional
         Number of jobs to run in parallel (default 1).
 
@@ -954,7 +957,7 @@ def validation_curve(estimator, X, y, param_name, param_range, labels=None,
                         verbose=verbose)
     out = parallel(delayed(_fit_and_score)(
         estimator, X, y, scorer, train, test, verbose,
-        parameters={param_name: v}, fit_params=None, return_train_score=True)
+        parameters={param_name: v}, fit_params=fit_params, return_train_score=True)
         for train, test in cv.split(X, y, labels) for v in param_range)
 
     out = np.asarray(out)[:, :2]
