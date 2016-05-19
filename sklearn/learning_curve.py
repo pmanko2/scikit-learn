@@ -27,7 +27,7 @@ __all__ = ['learning_curve', 'validation_curve']
 
 
 def learning_curve(estimator, X, y, train_sizes=np.linspace(0.1, 1.0, 5),
-                   cv=None, scoring=None, exploit_incremental_learning=False,
+                   cv=None, scoring=None, fit_params=None, exploit_incremental_learning=False,
                    n_jobs=1, pre_dispatch="all", verbose=0):
     """Learning curve.
 
@@ -85,6 +85,9 @@ def learning_curve(estimator, X, y, train_sizes=np.linspace(0.1, 1.0, 5),
         A string (see model evaluation documentation) or
         a scorer callable object / function with signature
         ``scorer(estimator, X, y)``.
+
+    fit_params : dict, optional, default: None
+        Parameters that will be passed to ``estimator.fit``.
 
     exploit_incremental_learning : boolean, optional, default: False
         If the estimator supports incremental learning, this will be
@@ -155,7 +158,7 @@ def learning_curve(estimator, X, y, train_sizes=np.linspace(0.1, 1.0, 5),
     else:
         out = parallel(delayed(_fit_and_score)(
             clone(estimator), X, y, scorer, train[:n_train_samples], test,
-            verbose, parameters=None, fit_params=None, return_train_score=True)
+            verbose, parameters=None, fit_params=fit_params, return_train_score=True)
             for train, test in cv for n_train_samples in train_sizes_abs)
         out = np.array(out)[:, :2]
         n_cv_folds = out.shape[0] // n_unique_ticks
